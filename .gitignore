@@ -1,43 +1,64 @@
-# ===== Visual Studio temporary & hidden files =====
+# =====================================================
+#  Visual Studio C++ .gitignore
+#  Bank System (Procedural -> OOP)
+# =====================================================
+
+# ----- Visual Studio user-specific & hidden files -----
 .vs/
 *.suo
 *.user
+*.userosscache
+*.sln.docstates
 *.vcxproj.user
 
-# ===== Build output directories =====
-Debug/
-Release/
+# ----- Build output directories -----
+[Dd]ebug/
+[Rr]elease/
 x64/
 x86/
+[Ww]in32/
 build/
 out/
+bin/
+obj/
 
-# ===== Compiled binaries & objects =====
+# ----- Compiled binaries & objects -----
 *.exe
+*.dll
+*.lib
 *.obj
 *.o
 *.pdb
 *.ilk
+*.exp
 *.idb
 *.ipdb
 *.iobj
-*.lib
-*.dll
-*.exp
+*.lastbuildstate
+*.tlog/
 
-# ===== IntelliSense & temp files =====
+# ----- IntelliSense & caching -----
+ipch/
 *.VC.db
 *.VC.opendb
 *.aps
 *.ncb
 *.sdf
 *.opensdf
+*.pch
+Browse.VC.db*
 
-# ===== OS-generated files =====
+# ----- CMake -----
+CMakeCache.txt
+CMakeFiles/
+cmake-build-*/
+CMakeLists.txt.user
+
+# ----- OS-generated files -----
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 .DS_Store
 
-# ===== Logs =====
+# ----- Logs -----
 *.log

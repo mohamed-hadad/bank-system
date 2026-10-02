@@ -1,88 +1,95 @@
-# Bank System
+# 🏦 Bank System — From Procedural to OOP (C++)
 
-A console-based banking management system written in C++. It provides full client
-account management, financial transactions, and a role-based user permission
-system, all backed by flat-file storage.
+> **I built the same bank system twice.**
+> Once with **Procedural Programming**, and once with **Object-Oriented Programming**.
+> This repository is the story of that transformation — same business, two completely different designs.
 
-> **Note:** This is an educational project. It is not intended for production use.
-> Security measures such as password hashing, input sanitization, and encryption
-> are intentionally out of scope.
 
 ---
 
-## Features
+## 📁 Repository Structure
 
-- **Authentication** – Username/password login with session handling.
-- **Client Management** – Add, delete, update, search, and list client accounts.
-- **Transactions** – Deposit, withdraw, and view total balances across all accounts.
-- **User Management** – Create, delete, update, search, and list system users.
-- **Role-Based Permissions** – Bit-flag permission system that controls access
-  to every module independently (list, add, delete, update, find, transactions,
-  manage users).
-- **Persistent Storage** – All data is stored in and loaded from plain-text files
-  (`ClientsData.txt`, `Users.txt`).
+```
+Bank-System-Procedural-to-OOP/
+├── README.md                  ← You are here (the journey & the comparison)
+├── .gitignore
+│
+├── V1_Procedural/             ← Version 1: Procedural Programming
+│   ├── BankSystem.cpp            (the entire system in one single file)
+│   ├── ClientsData.txt           (sample data)
+│   └── Users.txt                 (sample data — plain-text passwords)
+│
+└── V2_OOP/                    ← Version 2: Object-Oriented Programming
+    ├── BankSystem(OOP).sln       (Visual Studio solution)
+    ├── 36 source files           (Screens / Domain / Utilities layers)
+    ├── *.txt                     (sample data — encrypted passwords)
+    └── README.md                 (full architecture & features deep-dive)
+```
 
----
-
-## Permissions
-
-| Permission    | Value  |
-|---------------|-------:|
-| Full Access   |   -1   |
-| List Clients  |    1   |
-| Add Client    |    2   |
-| Delete Client |    4   |
-| Update Client |    8   |
-| Find Client   |   16   |
-| Transactions  |   32   |
-| Manage Users  |   64   |
+- **V1 has no separate README on purpose** — everything about it is explained in the comparison below.
+- **For the full OOP architecture, features & security notes → see [V2_OOP/README.md](V2_OOP/README.md).**
 
 ---
 
-## Built With
+## ⚖️ Before / After — The Same System, Two Designs
 
-| Component  | Detail                        |
-|------------|-------------------------------|
-| Language   | C++ (C++17)                   |
-| Compiler   | MSVC (Visual Studio 2022)     |
-| Platform   | Windows 11                    |
-| Storage    | Flat-file (`.txt`)            |
-| Libraries  | Standard Library only         |
+| Aspect | V1 — Procedural | V2 — OOP |
+|---|---|---|
+| **Code organization** | One single `.cpp` file (~700 lines) | 36 files across 3 layers (Screens / Domain / Utilities) |
+| **Data** | Passive structs (`stClient`, `stUser`) passed by reference everywhere | Real objects (`clsBankClient`, `clsUser`) inheriting from `clsPerson` |
+| **Behavior** | Free functions acting on data | Objects owning their own rules (`Client.Deposit()`, `Client.Withdraw()`, `Client.Transfer()`) |
+| **Withdraw logic** | Implemented as `Deposit(Amount * -1)` 😅 | A real `Withdraw()` that validates and defends the balance itself |
+| **UI vs Logic** | Fully coupled — every function prints and reads | Fully separated — 24 screen classes talking to a clean domain API |
+| **Encapsulation** | None — all struct fields exposed | All members private, accessed through controlled properties |
+| **File I/O** | Scattered load/save functions | Hidden inside the classes (private static converters & loaders) |
+| **Passwords in files** | Plain text | Encrypted (simple shift cipher, **Key = 5**) |
+| **Extra features** | — | Transfer Log, Login Register, lockout after 3 failed logins, Currency Exchange module, Number-To-Text |
+| **Entry point** | `main()` with login + menu loops | `main()` is 3 lines: `clsLoginScreen::ShowLoginScreen();` |
 
 ---
 
-## Files
-- `BankSystem.cpp`: source code
-- `ClientsData.txt`: client records
-- `Users.txt`: user records
+## 🔐 A Note on Password Encryption (V2)
 
-## Data Format
+In V2, passwords and PIN codes are stored **encrypted** in the data files using a simple character-shift cipher with **Key = 5**:
 
-Client record:
-`AccountNumber#//#PinCode#//#Name#//#Phone#//#Balance`
+| Username | Real Password | Stored in `Users.txt` as |
+|---|---|---|
+| `User2` | `1234` | `6789` |
 
-User record:
-`Username#//#Password#//#Permissions`
+> ⚠️ Educational-purpose encryption (demonstrating encapsulated security logic). A production system should use one-way hashing (bcrypt / SHA-256). Full details in [V2_OOP/README.md](V2_OOP/README.md#-security-notes-password-encryption).
 
-### Default Credentials
+---
 
-| Field       | Value    |
-|-------------|----------|
-| Username    | `Admin`  |
-| Password    | `1234`   |
-| Permissions | Full access (`-1`) |
+## 🚀 How to Run
 
-## How to Run
-1. Open the project in a C++ IDE.
-2. Make sure ClientsData.txt and Users.txt exist.
-3. Verify that Users.txt contains at least one valid user
-   (a default `Admin` account is included).
-4. Build and run the program.
-5. Log in with a valid username and password.
+### V1 — Procedural
+1. Compile `V1_Procedural/BankSystem.cpp` with any C++ compiler.
+2. Keep the sample `ClientsData.txt` & `Users.txt` next to the executable.
+3. Run — log in with any user from `Users.txt` (passwords are plain text there).
 
-## Note
-This project is for learning purposes only.
+### V2 — OOP
+1. **Requirements:** Windows + Visual Studio (the project uses MSVC's `__declspec(property)`).
+2. Open `V2_OOP/BankSystem(OOP).sln`, build & run.
+3. Sample data files are included — the system runs out of the box.
+4. **Demo login:** `User2` / `1234`
 
-- Passwords and PIN codes are stored as **plain text**.
-- The application is **Windows-only** (`system("cls")` is used for screen clearing).
-- No encryption, input sanitization, or concurrent-access safety is implemented.
+Full feature list & architecture: [V2_OOP/README.md](V2_OOP/README.md)
+
+---
+
+## 🧭 Why is V1 still here?
+
+Because the journey matters. V1 is the honest "before" picture: global state, coupled UI, passive data, and a withdraw implemented as a negative deposit. Keeping it next to V2 makes the transformation **visible and reviewable — not just claimed**.
+
+---
+
+## 🙏 Acknowledgments
+
+Special thanks to **Dr. Mohamed Abu Hadhoud** — *Programming Advices* — for the courses, the roadmap, and for teaching OOP as a way of thinking, not just a syntax.
+
+---
+
+
+## 📄 License
+
+Educational project — free to use for learning purposes.

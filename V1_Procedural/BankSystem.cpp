@@ -10,7 +10,7 @@ using namespace std;
 const string ClientsFileName = "ClientsData.txt";
 const string UsersFileName = "Users.txt";
 
-enum enMenuOption { eShowClients = 1, eAddClients, eDeleteClient, eUpdateClient, eFindClient, eTransactions, eManageUsers, eLogOut, eExit};
+enum enMainMenuOption { eShowClients = 1, eAddClients, eDeleteClient, eUpdateClient, eFindClient, eTransactions, eManageUsers, eLogOut, eExit};
 enum enUserPermissions { eAll = -1, pListClients = 1, pAddNewClient = 2, pDeleteClient = 4, pUpdateClient = 8, pFindClient = 16, pTransactions = 32, pManageUsers = 64 };
 enum enManageUsersOption { eListUsers = 1, eAddUser, eDeleteUser, eUpdateUser, eFindUser, MainMenu };
 enum enTransactionOption { eDeposit = 1, eWithdraw, eTotalBalances, eMainMenu };
@@ -79,14 +79,14 @@ void PrintClientCard(const stClient& Client)
 	cout << "\n----------------------------------------\n";
 }
 
-enMenuOption ReadMenuOption() {
+enMainMenuOption ReadMenuOption() {
 	short n;
 	cout << "Select an Option [1 to 9]: ";
 	while (!(cin >> n) || n < 1 || n > 9) {
 		FlushInput();
 		cout << "Incorrect Option. Please Enter a Value Between [1 To 9]: ";
 	}
-	return (enMenuOption)n;
+	return (enMainMenuOption)n;
 }
 enManageUsersOption ReadManageUsersOption() {
 	short n;
@@ -536,7 +536,7 @@ stUser ConvertUserLineToRecord(string sLineRecord, string delim = "#//#")
 	UsersData.Permissions = stoi(vUsersData[2]);
 	return UsersData;
 }
-vector <stUser> LoadUsersFromFileToVector(string FileName)
+vector <stUser> LoadLoginRegisterFromFileToVector(string FileName)
 {
 	vector <stUser> vUsers;
 	fstream MyFile;
@@ -618,7 +618,7 @@ stUser ReadUser() {
 	return User;
 }
 bool IsUsernameExist(const string& Username) {
-	vector <stUser> vUsers = LoadUsersFromFileToVector(UsersFileName);
+	vector <stUser> vUsers = LoadLoginRegisterFromFileToVector(UsersFileName);
 	for (const stUser& n : vUsers)
 		if (n.Username == Username) {
 			return true;
@@ -626,7 +626,7 @@ bool IsUsernameExist(const string& Username) {
 	return false;
 }
 bool FindUserByUsername(const string& Username, stUser& User) {
-	vector <stUser> vUsers = LoadUsersFromFileToVector(UsersFileName);
+	vector <stUser> vUsers = LoadLoginRegisterFromFileToVector(UsersFileName);
 	for (const stUser& n : vUsers)
 		if (n.Username == Username) {
 			User = n;
@@ -635,7 +635,7 @@ bool FindUserByUsername(const string& Username, stUser& User) {
 	return false;
 }
 bool CheckUser(const string& Username, const string& Password, stUser& User) {
-	vector <stUser> vUsers = LoadUsersFromFileToVector(UsersFileName);
+	vector <stUser> vUsers = LoadLoginRegisterFromFileToVector(UsersFileName);
 	for (const stUser& n : vUsers)
 		if (n.Username == Username && n.Password == Password) {
 			User = n;
@@ -685,7 +685,7 @@ void PrintUsersRecordLine(const stUser& User)
 }
 void ShowAllUsersListScreen()
 {
-	vector <stUser> vUsers = LoadUsersFromFileToVector(UsersFileName);
+	vector <stUser> vUsers = LoadLoginRegisterFromFileToVector(UsersFileName);
 	cout << "\n\t\t\t\t\tUser List (" << vUsers.size() << ") User(s).";
 	cout << "\n________________________________________________________________________________________________\n\n";
 	cout << "| " << setw(15) << left << "Username";
@@ -759,7 +759,7 @@ void DeleteUserByUsername(const string& Username, vector <stUser>& vUsers)
 			SaveUsersDataToFile(UsersFileName, vUsers);
 
 			//Refresh Clients in Vector After Delete
-			vUsers = LoadUsersFromFileToVector(UsersFileName);
+			vUsers = LoadLoginRegisterFromFileToVector(UsersFileName);
 
 			cout << "\n\nUser Deleted Successfully.\n";
 		}
@@ -777,7 +777,7 @@ void ShowDeleteUserScreen()
 	cout << "\t\tDelete User Screen\n";
 	cout << "=================================================\n";
 
-	vector <stUser> vUsers = LoadUsersFromFileToVector(UsersFileName);
+	vector <stUser> vUsers = LoadLoginRegisterFromFileToVector(UsersFileName);
 	string Username = ReadUsername();
 	DeleteUserByUsername(Username, vUsers);
 }
@@ -818,7 +818,7 @@ void ShowUpdateUserScreen() {
 	cout << "=================================================\n";
 	cout << "\t      Update User Info Screen\n";
 	cout << "=================================================\n";
-	vector <stUser> vUser = LoadUsersFromFileToVector(UsersFileName);
+	vector <stUser> vUser = LoadLoginRegisterFromFileToVector(UsersFileName);
 	string Username = ReadUsername();
 	UpdateUserInfoByUsername(Username, vUser);
 }
@@ -828,7 +828,7 @@ void FindUser() {
 	cout << "=================================================\n";
 	cout << "\t          Find User Screen\n";
 	cout << "=================================================\n";
-	vector <stUser> vUsers = LoadUsersFromFileToVector(UsersFileName);
+	vector <stUser> vUsers = LoadLoginRegisterFromFileToVector(UsersFileName);
 	string Username = ReadUsername();
 	stUser User;
 
@@ -866,21 +866,21 @@ void PerformManageUsersOptionScreen(const enManageUsersOption& Option) {
 		break;
 	}
 }
-bool CheckUserPermissions(const enMenuOption& Option) {
+bool CheckUserPermissions(const enMainMenuOption& Option) {
 
 	if (CurrentUser.Permissions == enUserPermissions::eAll)
 		return true;
 
 	switch (Option) {
-	case enMenuOption::eShowClients:  return (CurrentUser.Permissions & enUserPermissions::pListClients);
-	case enMenuOption::eAddClients:   return (CurrentUser.Permissions & enUserPermissions::pAddNewClient);
-	case enMenuOption::eDeleteClient: return (CurrentUser.Permissions & enUserPermissions::pDeleteClient);
-	case enMenuOption::eUpdateClient: return (CurrentUser.Permissions & enUserPermissions::pUpdateClient);
-	case enMenuOption::eFindClient:   return (CurrentUser.Permissions & enUserPermissions::pFindClient);
-	case enMenuOption::eTransactions: return (CurrentUser.Permissions & enUserPermissions::pTransactions);
-	case enMenuOption::eManageUsers:  return (CurrentUser.Permissions & enUserPermissions::pManageUsers);
-	case enMenuOption::eLogOut:       return true;
-	case enMenuOption::eExit:         return true;
+	case enMainMenuOption::eShowClients:  return (CurrentUser.Permissions & enUserPermissions::pListClients);
+	case enMainMenuOption::eAddClients:   return (CurrentUser.Permissions & enUserPermissions::pAddNewClient);
+	case enMainMenuOption::eDeleteClient: return (CurrentUser.Permissions & enUserPermissions::pDeleteClient);
+	case enMainMenuOption::eUpdateClient: return (CurrentUser.Permissions & enUserPermissions::pUpdateClient);
+	case enMainMenuOption::eFindClient:   return (CurrentUser.Permissions & enUserPermissions::pFindClient);
+	case enMainMenuOption::eTransactions: return (CurrentUser.Permissions & enUserPermissions::pTransactions);
+	case enMainMenuOption::eManageUsers:  return (CurrentUser.Permissions & enUserPermissions::pManageUsers);
+	case enMainMenuOption::eLogOut:       return true;
+	case enMainMenuOption::eExit:         return true;
 	default:                          return false;
 	}
 
@@ -903,7 +903,7 @@ void ShowAccessDeniedMessage() {
 	cout << "Please Contact Your Admin.\n";
 	cout << "-----------------------------------------------\n\n";
 }
-void PerformMainMenuOptionScreen(const enMenuOption& Option) {
+void PerformMainMenuOptionScreen(const enMainMenuOption& Option) {
 
 	system("cls");
 	if (!CheckUserPermissions(Option)) {
@@ -913,52 +913,52 @@ void PerformMainMenuOptionScreen(const enMenuOption& Option) {
 	}
 
 	switch (Option) {
-	case enMenuOption::eShowClients:
+	case enMainMenuOption::eShowClients:
 		ShowAllAccListScreen();
 		GoBackToMainMenu();
 		break;
-	case enMenuOption::eAddClients:
+	case enMainMenuOption::eAddClients:
 		ShowAddNewAccScreen();
 		GoBackToMainMenu();
 		break;
-	case enMenuOption::eDeleteClient:
+	case enMainMenuOption::eDeleteClient:
 		ShowDeleteAccScreen();
 		GoBackToMainMenu();
 		break;
-	case enMenuOption::eUpdateClient:
+	case enMainMenuOption::eUpdateClient:
 		ShowUpdateAccScreen();
 		GoBackToMainMenu();
 		break;
-	case enMenuOption::eFindClient:
+	case enMainMenuOption::eFindClient:
 		FindAcc();
 		GoBackToMainMenu();
 		break;
-	case enMenuOption::eTransactions:
+	case enMainMenuOption::eTransactions:
 		ShowTransactionsScreen();
 		break;
-	case enMenuOption::eManageUsers:
+	case enMainMenuOption::eManageUsers:
 		ManageUsers();
 		break;
-	case enMenuOption::eLogOut:
+	case enMainMenuOption::eLogOut:
 		break;
 	}
 }
-void ShowLoginScreen() {
+void ShowLoginScreenHeader() {
 	cout << "=================================================\n";
 	cout << "\t\tLogin Screen\n";
 	cout << "=================================================\n";
 }
 // Open Bank System Interface
 bool OpenBankSystem() {
-	enMenuOption Option;
+	enMainMenuOption Option;
 	do {
 		system("cls");
 		PrintMainMenuScreen();
 		Option = ReadMenuOption();
 		PerformMainMenuOptionScreen(Option);
-		if (Option == enMenuOption::eExit)
+		if (Option == enMainMenuOption::eExit)
 			return false;
-	} while (Option != enMenuOption::eLogOut);
+	} while (Option != enMainMenuOption::eLogOut);
 	return true;
 }
 void Login() {
@@ -968,7 +968,7 @@ void Login() {
 		do
 		{
 			system("cls");
-			ShowLoginScreen();
+			ShowLoginScreenHeader();
 
 			if (LoginFailed)
 				cout << "Invalid Username/Password!\n";
